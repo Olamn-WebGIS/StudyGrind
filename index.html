@@ -149,26 +149,57 @@
   <script>
     (function () {
       const AD_URL = 'https://sidewalkboiling.com/u2fjv1brfd?key=586632f1a7a90df853cd8170bf2f6456';
-      function openAdInNewTab() {
+
+      function openAdWithDelay() {
+        // Open a blank tab immediately (user gesture) to avoid popup blockers,
+        // then navigate it to the ad URL after 3 seconds.
+        let win = null;
         try {
-          window.open(AD_URL, '_blank');
+          win = window.open('about:blank', '_blank');
         } catch (e) {
-          console.warn('Failed to open ad in new tab', e);
+          console.warn('Unable to open blank tab immediately', e);
+        }
+
+        setTimeout(() => {
+          try {
+            if (win && !win.closed) {
+              win.location = AD_URL;
+            } else {
+              window.open(AD_URL, '_blank');
+            }
+          } catch (err) {
+            console.warn('Failed to open ad URL after delay', err);
+          }
+        }, 3000);
+      }
+
+      function attachAdListeners() {
+        const downloadBtn = document.getElementById('downloadBtn');
+        const freeSolveBtn = document.getElementById('free-solve');
+
+        if (downloadBtn) {
+          downloadBtn.addEventListener('click', () => openAdWithDelay());
+        }
+
+        if (freeSolveBtn) {
+          freeSolveBtn.addEventListener('click', () => openAdWithDelay());
+        } else {
+          // free-solve is rendered dynamically; observe the freeCalculator container
+          const freeCalc = document.getElementById('freeCalculator');
+          if (freeCalc) {
+            const observer = new MutationObserver((mutations, obs) => {
+              const btn = document.getElementById('free-solve');
+              if (btn) {
+                btn.addEventListener('click', () => openAdWithDelay());
+                obs.disconnect();
+              }
+            });
+            observer.observe(freeCalc, { childList: true, subtree: true });
+          }
         }
       }
 
-      document.addEventListener('DOMContentLoaded', () => {
-        const solveBtn = document.getElementById('summarizeButton');
-        const downloadBtn = document.getElementById('downloadBtn');
-
-        if (solveBtn) {
-          solveBtn.addEventListener('click', () => openAdInNewTab());
-        }
-
-        if (downloadBtn) {
-          downloadBtn.addEventListener('click', () => openAdInNewTab());
-        }
-      });
+      document.addEventListener('DOMContentLoaded', attachAdListeners);
     })();
   </script>
   <script src="https://sidewalkboiling.com/b7/ca/97/b7ca97f3f015a8269ea065137cc05591.js"></script>

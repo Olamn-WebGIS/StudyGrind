@@ -221,32 +221,76 @@ const handleSummaryComplete = () => {
 const setupInstallPrompt = () => {
   if (!installToast || !installToastBtn) return;
 
-  // Check if running on iOS
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-  console.log('[PWA] iOS detected:', isIOS);
+  // Check if running on iPhone only (not iPad/iPod)
+  const isIPhone = /iPhone/.test(navigator.userAgent) && !window.MSStream;
+  console.log('[PWA] iPhone detected:', isIPhone);
 
-  // iOS doesn't support beforeinstallprompt, but we can show custom instructions
-  const showIOSInstallPrompt = () => {
-    console.log('[PWA] Showing iOS-specific install instructions');
+  // iPhone doesn't support beforeinstallprompt; show a custom banner with instructions
+  const showIPhoneInstallPrompt = () => {
+    console.log('[PWA] Showing iPhone-specific install banner');
     const span = installToast.querySelector('span');
     if (span) {
-      span.innerHTML = '<strong>📱 Add to Home Screen:</strong> Tap Share and select "Add to Home Screen" to use StudyGrind as an app.';
+      span.innerHTML = '<strong>📱 Install StudyGrind</strong> — Add StudyGrind to your Home Screen for quick access.';
     }
+    // Make the toast visible
     installToast.classList.remove('hidden');
     installToast.classList.add('visible');
+    installToast.style.display = 'flex';
+
+    // When the install button is clicked, show step-by-step instructions
+    const showInstructions = () => {
+      if (!installToast) return;
+      installToast.classList.remove('visible');
+      installToast.classList.add('visible');
+      installToast.style.display = 'flex';
+      installToast.innerHTML = `
+        <div style="flex:1">
+          <strong>How to add to Home Screen</strong>
+          <ol style="margin:8px 0 0 16px; padding:0;">
+            <li>Tap the Share button (square with an arrow) in Safari.</li>
+            <li>Select "Add to Home Screen" from the share sheet.</li>
+            <li>Tap "Add" — StudyGrind will appear on your Home Screen.</li>
+          </ol>
+        </div>
+        <div style="margin-left:12px; display:flex; flex-direction:column; gap:8px;">
+          <button id="installToastClose" class="toast-close" style="padding:8px 10px; border-radius:8px; background:#fff; border:0;">Got it</button>
+        </div>
+      `;
+
+      const closeBtn = document.getElementById('installToastClose');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+          if (installToast) {
+            installToast.classList.remove('visible');
+            installToast.classList.add('hidden');
+            installToast.style.display = 'none';
+            // restore original content for potential future shows
+            setTimeout(() => window.location.reload(), 200);
+          }
+        });
+      }
+    };
+
+    if (installToastBtn) {
+      installToastBtn.addEventListener('click', showInstructions);
+      installToastBtn.addEventListener('touchend', (e) => { e.preventDefault(); showInstructions(); });
+    }
+
+    // Auto-hide after 12s if user doesn't interact
     setTimeout(() => {
-      if (installToast) {
+      if (installToast && installToast.classList.contains('visible')) {
         installToast.classList.remove('visible');
         installToast.classList.add('hidden');
+        installToast.style.display = 'none';
       }
-    }, 10000);
+    }, 12000);
   };
 
-  // Show iOS prompt on load if on iOS (no beforeinstallprompt support)
-  if (isIOS) {
+  // Show iPhone prompt on load if on iPhone (no beforeinstallprompt support)
+  if (isIPhone) {
     window.addEventListener('load', () => {
-      console.log('[PWA] iOS load event - showing iOS install prompt');
-      setTimeout(showIOSInstallPrompt, 1000);
+      console.log('[PWA] iPhone load event - showing iPhone install banner');
+      setTimeout(showIPhoneInstallPrompt, 800);
     });
   } else {
     // Android and desktop: wait for beforeinstallprompt
