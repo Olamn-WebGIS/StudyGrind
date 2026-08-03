@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#2b2b6e" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="StudyGrind" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>StudyGrind PDF Study Companion</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="apple-touch-icon" href="app-icon.svg" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.1/math.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📚 StudyGrind Study Companion</h1>
+      <p>Upload lecture notes or textbooks for quick summaries, and use the built-in formula calculator for engineering practice.</p>
+      <div id="installToast" class="install-toast hidden">
+        <span>Install StudyGrind for faster access.</span>
+        <div class="toast-actions">
+          <button id="installToastBtn" class="toast-action">Install</button>
+          <button id="installToastClose" class="toast-close" aria-label="Close install prompt">×</button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div class="tab-bar">
+        <button id="tabSummary" class="tab active">PDF Summary</button>
+        <button id="tabCalculator" class="tab">Formula Calculator</button>
+      </div>
+
+      <div id="summaryTab" class="tab-panel active">
+        <section class="feature-card">
+          <div class="upload-box" id="dropZone">
+            <input type="file" id="pdfInput" accept=".pdf" hidden />
+            <label for="pdfInput" class="btn-upload">Choose PDF File</label>
+          </div>
+
+          <div class="progress-container hidden" id="progressBox" style="display: none;">
+            <h3>Processing <span id="pageNum">0</span>/<span id="totalPages">0</span> pages</h3>
+            <div class="progress-bar">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <p id="statusText">Extracting text...</p>
+          </div>
+
+          <div class="result-box hidden" id="resultBox" style="display: none;">
+            <button class="btn-download" id="downloadBtn">Download Study Summary</button>
+          </div>
+
+          <button type="button" id="summarizeButton">Generate Summary</button>
+          <p class="file-name" id="fileName"></p>
+        </section>
+
+        <section class="output-card" id="summarySection">
+          <h2>Study Summary</h2>
+          <div id="output"></div>
+        </section>
+      </div>
+
+      <div id="calculatorTab" class="tab-panel">
+        <section class="output-card">
+          <h2>Formula Calculator</h2>
+          <div id="freeCalculator"></div>
+        </section>
+      </div>
+
+    </main>
+
+    <section class="gamification-card">
+      <div class="gamification-header">
+        <div>
+          <h2>Study Rewards</h2>
+          <p>Earn points every day and unlock airtime when you stay consistent.</p>
+        </div>
+        <div class="points-badge" id="pointsBadge">0 pts</div>
+      </div>
+      <div class="gamification-meta">
+        <span id="streakText">Daily streak: 0 days</span>
+        <span id="nextRewardText">Next airtime reward at 100 points</span>
+      </div>
+      <div class="gamification-message" id="rewardMessage">Welcome! Open the app daily to earn more study points.</div>
+      <div class="reward-redemption">
+        <button type="button" id="redeemRewardBtn" class="redeem-button" style="display:none;">Redeem &#8358;500 airtime</button>
+        <div id="redeemForm" class="redeem-form" style="display:none;">
+          <p>Enter your phone number and network to claim your airtime reward.</p>
+          <input type="tel" id="rewardPhone" class="redeem-input" placeholder="Phone number" />
+          <select id="rewardNetwork" class="redeem-input">
+            <option value="">Select network</option>
+            <option value="MTN">MTN</option>
+            <option value="GLO">GLO</option>
+            <option value="Airtel">Airtel</option>
+            <option value="9mobile">T2 Mobile</option>
+          </select>
+          <button type="button" id="redeemSubmitBtn" class="free-secondary-btn">Submit redemption</button>
+          <p id="redeemStatus" class="redeem-status"></p>
+        </div>
+      </div>
+    </section>
+
+    <footer>© OLAMN Technologies — Study with confidence.</footer>
+  </div>
+
+  <!-- 1. JSPDF -->
+  <script src="jspdf.umd.min.js"></script>
+
+  <!-- 2. PDF.js (local) -->
+  <script src="pdf.min.js"></script>
+
+  <!-- 3. YOUR CODE -->
+  <script src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch((error) => {
+          console.warn('Service worker registration failed:', error);
+        });
+      });
+    }
+  </script>
+</body>
+</html>

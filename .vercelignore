@@ -1,0 +1,25 @@
+# Ignore local build and dependency artifacts
+node_modules/
+.DS_Store
+*.log
+*.tgz
+*.tmp
+*.bak
+
+# Ignore source PDFs or large training data files if any
+*.pdf
+
+# Keep app assets only
+!index.html
+!app.js
+!style.css
+!manifest.webmanifest
+!sw.js
+!favicon.ico
+!favicon.svg
+!app-icon.svg
+!jspdf.umd.min.js
+!pdf.min.js
+!pdf.worker.min.js
+!worker.min.js
+!tessdata/**
