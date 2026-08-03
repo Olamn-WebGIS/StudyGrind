@@ -222,20 +222,27 @@ const setupInstallPrompt = () => {
   if (!installToast || !installToastBtn) return;
 
   window.addEventListener('beforeinstallprompt', (event) => {
+    console.log('[PWA] beforeinstallprompt event fired');
     event.preventDefault();
     deferredInstallPrompt = event;
     installToast.classList.remove('hidden');
     installToast.classList.add('visible');
+    console.log('[PWA] Install toast shown');
     setTimeout(() => {
       if (installToast) {
         installToast.classList.remove('visible');
         installToast.classList.add('hidden');
+        console.log('[PWA] Install toast auto-hidden after 8s');
       }
     }, 8000);
   });
 
   installToastBtn.addEventListener('click', async () => {
-    if (!deferredInstallPrompt) return;
+    console.log('[PWA] Install button clicked');
+    if (!deferredInstallPrompt) {
+      console.log('[PWA] No install prompt available');
+      return;
+    }
     deferredInstallPrompt.prompt();
     const choiceResult = await deferredInstallPrompt.userChoice;
     if (installToast) {
@@ -244,12 +251,16 @@ const setupInstallPrompt = () => {
     }
     deferredInstallPrompt = null;
     if (choiceResult.outcome === 'accepted') {
+      console.log('[PWA] Installation accepted');
       if (rewardMessage) rewardMessage.innerText = 'StudyGrind is installed. Open it from your home screen anytime.';
+    } else {
+      console.log('[PWA] Installation dismissed');
     }
   });
 
   if (installToastClose) {
     installToastClose.addEventListener('click', () => {
+      console.log('[PWA] Install toast closed manually');
       if (installToast) {
         installToast.classList.remove('visible');
         installToast.classList.add('hidden');
@@ -259,6 +270,7 @@ const setupInstallPrompt = () => {
   }
 
   window.addEventListener('appinstalled', () => {
+    console.log('[PWA] App installed!');
     installToast.classList.add('hidden');
     if (rewardMessage) rewardMessage.innerText = 'App installed! You can now launch StudyGrind from your device.';
   });
