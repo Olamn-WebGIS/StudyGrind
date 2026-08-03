@@ -84,7 +84,7 @@ const updateRewardRedemptionUI = (state) => {
   }
 
   if (redeemForm && pending === 0) {
-    redeemForm.style.display = 'none';
+    redeemForm.classList.add('hidden');
     if (redeemStatus) redeemStatus.innerText = '';
   }
 
@@ -221,26 +221,56 @@ const handleSummaryComplete = () => {
 const setupInstallPrompt = () => {
   if (!installToast || !installToastBtn) return;
 
-  window.addEventListener('beforeinstallprompt', (event) => {
-    console.log('[PWA] beforeinstallprompt event fired');
-    event.preventDefault();
-    deferredInstallPrompt = event;
+  // Check if running on iOS
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  console.log('[PWA] iOS detected:', isIOS);
+
+  // iOS doesn't support beforeinstallprompt, but we can show custom instructions
+  const showIOSInstallPrompt = () => {
+    console.log('[PWA] Showing iOS-specific install instructions');
+    const span = installToast.querySelector('span');
+    if (span) {
+      span.innerHTML = '<strong>📱 Add to Home Screen:</strong> Tap Share and select "Add to Home Screen" to use StudyGrind as an app.';
+    }
     installToast.classList.remove('hidden');
     installToast.classList.add('visible');
-    console.log('[PWA] Install toast shown');
     setTimeout(() => {
       if (installToast) {
         installToast.classList.remove('visible');
         installToast.classList.add('hidden');
-        console.log('[PWA] Install toast auto-hidden after 8s');
       }
-    }, 8000);
-  });
+    }, 10000);
+  };
+
+  // Show iOS prompt on load if on iOS (no beforeinstallprompt support)
+  if (isIOS) {
+    window.addEventListener('load', () => {
+      console.log('[PWA] iOS load event - showing iOS install prompt');
+      setTimeout(showIOSInstallPrompt, 1000);
+    });
+  } else {
+    // Android and desktop: wait for beforeinstallprompt
+    window.addEventListener('beforeinstallprompt', (event) => {
+      console.log('[PWA] beforeinstallprompt event fired');
+      event.preventDefault();
+      deferredInstallPrompt = event;
+      installToast.classList.remove('hidden');
+      installToast.classList.add('visible');
+      console.log('[PWA] Install toast shown');
+      setTimeout(() => {
+        if (installToast) {
+          installToast.classList.remove('visible');
+          installToast.classList.add('hidden');
+          console.log('[PWA] Install toast auto-hidden after 8s');
+        }
+      }, 8000);
+    });
+  }
 
   installToastBtn.addEventListener('click', async () => {
     console.log('[PWA] Install button clicked');
     if (!deferredInstallPrompt) {
-      console.log('[PWA] No install prompt available');
+      console.log('[PWA] No install prompt available (likely iOS)');
       return;
     }
     deferredInstallPrompt.prompt();
@@ -258,6 +288,12 @@ const setupInstallPrompt = () => {
     }
   });
 
+  installToastBtn.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    console.log('[PWA] Install button touched');
+    installToastBtn.click();
+  });
+
   if (installToastClose) {
     installToastClose.addEventListener('click', () => {
       console.log('[PWA] Install toast closed manually');
@@ -266,6 +302,10 @@ const setupInstallPrompt = () => {
         installToast.classList.add('hidden');
       }
       deferredInstallPrompt = null;
+    });
+    installToastClose.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      installToastClose.click();
     });
   }
 
@@ -284,7 +324,7 @@ const initializeApp = () => {
   const redeemForm = document.getElementById('redeemForm');
 
   if (redeemButton) {
-    redeemButton.addEventListener('click', () => {
+    const toggleRedeemForm = () => {
       const state = loadGamificationState();
       const pending = getPendingRewards(state);
       if (pending <= 0) {
@@ -294,8 +334,16 @@ const initializeApp = () => {
         return;
       }
       if (redeemForm) {
-        redeemForm.style.display = redeemForm.style.display === 'block' ? 'none' : 'block';
+        redeemForm.classList.toggle('hidden');
       }
+    };
+    redeemButton.addEventListener('click', toggleRedeemForm);
+    redeemButton.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      toggleRedeemForm();
+    });
+    redeemButton.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
     });
     redeemButton.innerText = `Redeem ₦${REWARD_AIRTIME_VALUE} airtime`;
   }
@@ -324,29 +372,25 @@ initializeApp();
 
 const showProgress = () => {
   progressBox.classList.remove('hidden');
-  progressBox.style.display = 'block';
 };
 
 const hideProgress = () => {
   if (progressBox) {
     progressBox.classList.add('hidden');
-    progressBox.style.display = 'none';
   }
 };
 
 if (summarySection) {
-  summarySection.style.display = 'none';
+  summarySection.classList.add('hidden');
 }
 if (progressBox) {
   progressBox.classList.add('hidden');
-  progressBox.style.display = 'none';
 }
 
 const updateStatus = (message, showProgress = false) => {
   if (statusText) statusText.innerText = message;
   if (progressBox && showProgress) {
     progressBox.classList.remove('hidden');
-    progressBox.style.display = 'block';
   }
 };
 
@@ -1370,7 +1414,7 @@ function generateSmartQuestions(text) {
 
 const renderPageResult = (pageResult) => {
   if (summarySection) {
-    summarySection.style.display = 'block';
+    summarySection.classList.remove('hidden');
   }
 
   const wrapper = document.createElement('div');
@@ -1451,10 +1495,9 @@ const handleFile = async (event) => {
   progressFill.style.width = '0%';
   output.innerHTML = '';
   if (summarySection) {
-    summarySection.style.display = 'none';
+    summarySection.classList.add('hidden');
   }
   resultBox.classList.add('hidden');
-  resultBox.style.display = 'none';
 
   try {
     // Use pdf.js to extract text from PDF pages in-browser
@@ -1532,7 +1575,6 @@ const handleFile = async (event) => {
 
     resultBox.dataset.summary = JSON.stringify(summaries);
     resultBox.classList.remove('hidden');
-    resultBox.style.display = 'block';
     updateStatus('Your study summary is ready.');
     handleSummaryComplete();
   } catch (error) {
@@ -1642,18 +1684,26 @@ const activateTab = (tabName) => {
 };
 
 if (tabSummary) {
-  tabSummary.addEventListener('click', () => activateTab('summary'));
+  const activateSummary = () => activateTab('summary');
+  tabSummary.addEventListener('click', activateSummary);
   tabSummary.addEventListener('touchend', (e) => {
     e.preventDefault();
-    activateTab('summary');
+    activateSummary();
+  });
+  tabSummary.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
   });
 }
 
 if (tabCalculator) {
-  tabCalculator.addEventListener('click', () => activateTab('calculator'));
+  const activateCalculator = () => activateTab('calculator');
+  tabCalculator.addEventListener('click', activateCalculator);
   tabCalculator.addEventListener('touchend', (e) => {
     e.preventDefault();
-    activateTab('calculator');
+    activateCalculator();
+  });
+  tabCalculator.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
   });
 }
 
