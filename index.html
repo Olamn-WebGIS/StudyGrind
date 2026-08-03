@@ -9,10 +9,10 @@
   <meta name="apple-mobile-web-app-title" content="StudyGrind" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>StudyGrind PDF Study Companion</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-  <link rel="apple-touch-icon" href="app-icon.svg" />
-  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="apple-touch-icon" href="/app-icon.svg" />
+  <link rel="manifest" href="/manifest.webmanifest" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.1/math.min.js"></script>
 </head>
 <body>
@@ -114,11 +114,11 @@
   <script src="pdf.min.js"></script>
 
   <!-- 3. YOUR CODE -->
-  <script src="app.js"></script>
+  <script src="/app.js"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js').catch((error) => {
+        navigator.serviceWorker.register('/sw.js').catch((error) => {
           console.warn('Service worker registration failed:', error);
         });
       });

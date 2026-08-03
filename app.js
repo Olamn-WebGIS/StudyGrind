@@ -2,7 +2,7 @@ const { jsPDF } = window.jspdf || {};
 
 // If pdfjsLib is available (we include pdf.min.js in index.html), set worker path
 if (typeof pdfjsLib !== 'undefined') {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = 'pdf.worker.min.js';
+  pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
 }
 
 const pdfInput = document.getElementById('pdfInput');

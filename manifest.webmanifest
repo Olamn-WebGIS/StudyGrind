@@ -4,14 +4,14 @@
   "description": "Summarize PDFs and solve formulas with StudyGrind.",
   "icons": [
     {
-      "src": "app-icon.svg",
+      "src": "/app-icon.svg",
       "type": "image/svg+xml",
       "sizes": "any",
       "purpose": "any maskable"
     }
   ],
-  "start_url": ".",
-  "scope": ".",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#1a1a4d",
   "theme_color": "#2b2b6e",
