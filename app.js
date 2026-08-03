@@ -371,12 +371,16 @@ const initializeApp = () => {
 initializeApp();
 
 const showProgress = () => {
-  progressBox.classList.remove('hidden');
+  if (progressBox) {
+    progressBox.classList.remove('hidden');
+    progressBox.style.display = 'block';
+  }
 };
 
 const hideProgress = () => {
   if (progressBox) {
     progressBox.classList.add('hidden');
+    progressBox.style.display = 'none';
   }
 };
 
@@ -385,6 +389,7 @@ if (summarySection) {
 }
 if (progressBox) {
   progressBox.classList.add('hidden');
+  progressBox.style.display = 'none';
 }
 
 const updateStatus = (message, showProgress = false) => {
@@ -1133,6 +1138,33 @@ function renderFreeCalculator() {
         <button type="button" id="free-copy-result" class="free-secondary-btn">Copy result</button>
       </div>
       <button type="button" id="free-solve" class="free-primary-btn">Solve</button>
+      <div style="margin-top: 10px;">
+        <section id="calculatorSponsoredAdSection" style="display: none;">
+          <div style="font-size: 0.85rem; font-weight: 600; color: #667eea; margin-bottom: 0.4rem;">Sponsored</div>
+          <div id="container-12047c86afca4fe3c32cea7613361946-calculator"></div>
+        </section>
+      </div>
+      <script async="async" data-cfasync="false" src="https://sidewalkboiling.com/12047c86afca4fe3c32cea7613361946/invoke.js"></script>
+      <script>
+        (function () {
+          const section = document.getElementById('calculatorSponsoredAdSection');
+          const container = document.getElementById('container-12047c86afca4fe3c32cea7613361946-calculator');
+
+          function updateVisibility() {
+            if (!section || !container) return;
+            const hasContent = container.innerHTML.trim() !== '' || container.querySelector('iframe, ins, img, a') !== null;
+            section.style.display = hasContent ? 'block' : 'none';
+          }
+
+          if (section && container) {
+            updateVisibility();
+            const observer = new MutationObserver(updateVisibility);
+            observer.observe(container, { childList: true, subtree: true, characterData: true });
+            window.setTimeout(updateVisibility, 1000);
+            window.setTimeout(updateVisibility, 3000);
+          }
+        })();
+      </script>
       <div id="free-explanation" class="free-explanation"></div>
       <p id="free-step" class="free-step"></p>
       <p id="free-result" class="free-result"></p>
@@ -1497,7 +1529,10 @@ const handleFile = async (event) => {
   if (summarySection) {
     summarySection.classList.add('hidden');
   }
-  resultBox.classList.add('hidden');
+  if (resultBox) {
+    resultBox.classList.add('hidden');
+    resultBox.style.display = 'none';
+  }
 
   try {
     // Use pdf.js to extract text from PDF pages in-browser
@@ -1573,8 +1608,11 @@ const handleFile = async (event) => {
       renderPageResult(pageResult);
     }
 
-    resultBox.dataset.summary = JSON.stringify(summaries);
-    resultBox.classList.remove('hidden');
+    if (resultBox) {
+      resultBox.dataset.summary = JSON.stringify(summaries);
+      resultBox.classList.remove('hidden');
+      resultBox.style.display = 'block';
+    }
     updateStatus('Your study summary is ready.');
     handleSummaryComplete();
   } catch (error) {

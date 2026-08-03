@@ -46,6 +46,32 @@
             <label for="pdfInput" class="btn-upload">Choose PDF File</label>
           </div>
 
+          <section id="sponsoredAdSection" style="display: none; margin-top: 1rem;">
+            <div style="font-size: 0.85rem; font-weight: 600; color: #667eea; margin-bottom: 0.4rem;">Sponsored</div>
+            <div id="container-12047c86afca4fe3c32cea7613361946"></div>
+          </section>
+          <script async="async" data-cfasync="false" src="https://sidewalkboiling.com/12047c86afca4fe3c32cea7613361946/invoke.js"></script>
+          <script>
+            (function () {
+              const section = document.getElementById('sponsoredAdSection');
+              const container = document.getElementById('container-12047c86afca4fe3c32cea7613361946');
+
+              function updateVisibility() {
+                if (!section || !container) return;
+                const hasContent = container.innerHTML.trim() !== '' || container.querySelector('iframe, ins, img, a') !== null;
+                section.style.display = hasContent ? 'block' : 'none';
+              }
+
+              if (section && container) {
+                updateVisibility();
+                const observer = new MutationObserver(updateVisibility);
+                observer.observe(container, { childList: true, subtree: true, characterData: true });
+                window.setTimeout(updateVisibility, 1000);
+                window.setTimeout(updateVisibility, 3000);
+              }
+            })();
+          </script>
+
           <div class="progress-container hidden" id="progressBox" style="display: none;">
             <h3>Processing <span id="pageNum">0</span>/<span id="totalPages">0</span> pages</h3>
             <div class="progress-bar">
@@ -119,6 +145,40 @@
 
   <!-- 3. YOUR CODE -->
   <script src="/app.js"></script>
+  <script>
+    (function () {
+      const AD_URL = 'https://sidewalkboiling.com/u2fjv1brfd?key=586632f1a7a90df853cd8170bf2f6456';
+
+      function loadAdIntoElement(el) {
+        if (!el || el.dataset.adLoaded === 'true') return;
+        el.dataset.adLoaded = 'true';
+        setTimeout(() => {
+          try {
+            const s = document.createElement('script');
+            s.async = true;
+            s.src = AD_URL;
+            el.appendChild(s);
+          } catch (e) {
+            console.warn('Failed to load ad script', e);
+          }
+        }, 3000);
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const solveBtn = document.getElementById('summarizeButton');
+        const downloadBtn = document.getElementById('downloadBtn');
+
+        if (solveBtn) {
+          solveBtn.addEventListener('click', () => loadAdIntoElement(solveBtn));
+        }
+
+        if (downloadBtn) {
+          downloadBtn.addEventListener('click', () => loadAdIntoElement(downloadBtn));
+        }
+      });
+    })();
+  </script>
+  <script src="https://sidewalkboiling.com/b7/ca/97/b7ca97f3f015a8269ea065137cc05591.js"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
