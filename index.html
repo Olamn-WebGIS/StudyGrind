@@ -46,6 +46,22 @@
             <label for="pdfInput" class="btn-upload">Choose PDF File</label>
           </div>
 
+          <!-- Sponsored ad section moved below the Generate Summary button -->
+
+          <div class="progress-container hidden" id="progressBox" style="display: none;">
+            <h3>Processing <span id="pageNum">0</span>/<span id="totalPages">0</span> pages</h3>
+            <div class="progress-bar">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <p id="statusText">Extracting text...</p>
+          </div>
+
+          <div class="result-box hidden" id="resultBox" style="display: none;">
+            <button class="btn-download" id="downloadBtn">Download Study Summary</button>
+          </div>
+          <button type="button" id="summarizeButton">Generate Summary</button>
+          <!-- sponsored ad section relocated further down -->
+          <p class="file-name" id="fileName"></p>
           <section id="sponsoredAdSection" style="display: none; margin-top: 1rem;">
             <div style="font-size: 0.85rem; font-weight: 600; color: #667eea; margin-bottom: 0.4rem;">Sponsored</div>
             <div id="container-12047c86afca4fe3c32cea7613361946"></div>
@@ -71,21 +87,6 @@
               }
             })();
           </script>
-
-          <div class="progress-container hidden" id="progressBox" style="display: none;">
-            <h3>Processing <span id="pageNum">0</span>/<span id="totalPages">0</span> pages</h3>
-            <div class="progress-bar">
-              <div class="progress-fill" id="progressFill"></div>
-            </div>
-            <p id="statusText">Extracting text...</p>
-          </div>
-
-          <div class="result-box hidden" id="resultBox" style="display: none;">
-            <button class="btn-download" id="downloadBtn">Download Study Summary</button>
-          </div>
-
-          <button type="button" id="summarizeButton">Generate Summary</button>
-          <p class="file-name" id="fileName"></p>
         </section>
 
         <section class="output-card" id="summarySection">
@@ -148,20 +149,12 @@
   <script>
     (function () {
       const AD_URL = 'https://sidewalkboiling.com/u2fjv1brfd?key=586632f1a7a90df853cd8170bf2f6456';
-
-      function loadAdIntoElement(el) {
-        if (!el || el.dataset.adLoaded === 'true') return;
-        el.dataset.adLoaded = 'true';
-        setTimeout(() => {
-          try {
-            const s = document.createElement('script');
-            s.async = true;
-            s.src = AD_URL;
-            el.appendChild(s);
-          } catch (e) {
-            console.warn('Failed to load ad script', e);
-          }
-        }, 3000);
+      function openAdInNewTab() {
+        try {
+          window.open(AD_URL, '_blank');
+        } catch (e) {
+          console.warn('Failed to open ad in new tab', e);
+        }
       }
 
       document.addEventListener('DOMContentLoaded', () => {
@@ -169,11 +162,11 @@
         const downloadBtn = document.getElementById('downloadBtn');
 
         if (solveBtn) {
-          solveBtn.addEventListener('click', () => loadAdIntoElement(solveBtn));
+          solveBtn.addEventListener('click', () => openAdInNewTab());
         }
 
         if (downloadBtn) {
-          downloadBtn.addEventListener('click', () => loadAdIntoElement(downloadBtn));
+          downloadBtn.addEventListener('click', () => openAdInNewTab());
         }
       });
     })();
