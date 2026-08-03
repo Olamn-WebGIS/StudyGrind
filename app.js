@@ -1631,10 +1631,18 @@ const activateTab = (tabName) => {
 
 if (tabSummary) {
   tabSummary.addEventListener('click', () => activateTab('summary'));
+  tabSummary.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    activateTab('summary');
+  });
 }
 
 if (tabCalculator) {
   tabCalculator.addEventListener('click', () => activateTab('calculator'));
+  tabCalculator.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    activateTab('calculator');
+  });
 }
 
 if (dropZone) {

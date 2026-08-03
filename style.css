@@ -487,6 +487,10 @@ main {
   cursor: pointer;
   font-weight: 700;
   transition: background 0.2s, color 0.2s, border-color 0.2s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .tab.active {
